@@ -3,7 +3,7 @@
         <h2>Calculateur CHUS</h2>
 
         <div class="bg-light d-flex justify-content-between col-md-8 col-12 mb-2">
-            <h4 class="m-0">Débits pour USI (mcg/kg/min)</h4>
+            <h4 class="m-0">Débits pour médicaments USI</h4>
             <button class="btn btn-sm btn-warning" @click="reset()">Effacer</button>
         </div>
         <div class="form-group col-12 col-md-6">
@@ -26,7 +26,7 @@
         <div class="form-group col-12 col-md-6">
             <label class="text-dark font-weight-bold px-2 text-uppercase small" for="rate">Débit prescrit (mcg/kg/min)</label>
             <input type="text" id="rate" class="form-control" v-model.trim="$v.form.rate.$model">
-            <small class="text-muted" v-if="form.drug">Débit usuel : {{ form.drug.rate_min }}-{{ form.drug.rate_max }} mcg/kg/min</small>
+            <small class="text-muted" v-if="form.drug">Débit usuel : {{ form.drug.rate_min }}-{{ form.drug.rate_max }} <span v-html="rateUnitString"></span></small>
             <div v-if="!$v.form.rate.decimal" class="text-danger small">La valeur du débit est invalide (utilisez un point "." pour les décimales).</div>
             <div v-else-if="!$v.form.rate.minValue" class="text-danger small">La valeur du débit ne peut être inférieure à 0.</div>
             <div v-else-if="!$v.form.rate.maxValue" class="text-danger small">Il serait très étonnant que le débit soit supérieur à 100 mcg/kg/min.</div>
@@ -67,8 +67,9 @@
                     let conc = this.form.drug.concentration;
                     let rate = this.form.rate;
                     let weight = this.form.weight;
+                    let rate_unit_factor = this.form.drug.rate_unit === 'mcg/kg/min' ? 60 : 1;
 
-                    return Math.round(rate * weight * 60 / conc * 100)/100;
+                    return Math.round(rate * weight * rate_unit_factor / conc * 100)/100;
                 }
                 return null
             },
@@ -79,6 +80,11 @@
                     }
                 }
                 return false;
+            },
+            rateUnitString() {
+                let rateUnitSplit = this.form.drug.rate_unit.split('/');
+
+                return `${rateUnitSplit[0]}/${rateUnitSplit[1]}/<strong>${rateUnitSplit[2]}</strong>`
             }
         },
 
