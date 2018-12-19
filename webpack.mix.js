@@ -1,4 +1,5 @@
 let mix = require('laravel-mix');
+let replace = require('replace');
 
 /*
  |--------------------------------------------------------------------------
@@ -13,9 +14,36 @@ let mix = require('laravel-mix');
 
 let outputDir = mix.inProduction() ? 'docs' : 'public';
 
-mix.js('src/app.js', outputDir)
+mix.setPublicPath(outputDir)
+    .js('src/app.js', outputDir)
     .sass('src/styles/app.scss', outputDir)
     .copy('src/index.html', outputDir);
+
+if(mix.inProduction()) {
+    mix.version()
+        .then(() => {
+        // Cache busting
+        let manifest = require('./' + outputDir + '/mix-manifest.json');
+        let js = manifest['/app.js'].substring(1);
+        let css = manifest['/app.css'].substring(1);
+
+        replace({
+            regex: 'app.js',
+            replacement: js,
+            paths: ['./' + outputDir + '/index.html'],
+            recursive: false,
+            silent: true
+        });
+
+        replace({
+            regex: 'app.css',
+            replacement: css,
+            paths: ['./' + outputDir + '/index.html'],
+            recursive: false,
+            silent: true
+        });
+    });
+}
 
 // Full API
 // mix.js(src, output);
