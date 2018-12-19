@@ -74,7 +74,7 @@
             },
             rateMaxReached() {
                 if(!this.$v.form.$invalid) {
-                    if(this.form.rate >= this.form.drug.rate_max) {
+                    if(this.form.rate > this.form.drug.rate_max) {
                         return true
                     }
                 }
