@@ -10,7 +10,7 @@
             <label class="text-dark font-weight-bold px-2 text-uppercase small" for="drugs">Médicament</label>
             <select id="drugs" class="form-control" v-model="$v.form.drug.$model">
                 <option v-for="drug in drugs" :value="drug">
-                    {{ drug.name }} {{ drug.concentration }} {{ drug.concentration_unit }}
+                    {{ drug.name }}
                 </option>
             </select>
         </div>
